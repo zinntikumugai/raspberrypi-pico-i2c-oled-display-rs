@@ -1,0 +1,12 @@
+services:
+  raspberrypi-pico-i2c-oled-display-rs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "baker-link-env"
+    container_name: "raspberrypi-pico-i2c-oled-display-rs-container"
+    volumes:
+      - "../:/raspberrypi-pico-i2c-oled-display-rs"
+    working_dir: /raspberrypi-pico-i2c-oled-display-rs
+    command: /bin/sh
+    tty: true
