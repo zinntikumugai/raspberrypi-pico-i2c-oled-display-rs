@@ -3,6 +3,7 @@
 
 use defmt::*;
 use defmt_rtt as _;
+use embedded_hal::delay::DelayNs;
 use panic_probe as _;
 use rp2040_hal::{self as hal, fugit::RateExtU32};
 
@@ -44,6 +45,8 @@ fn main() -> ! {
     .ok()
     .unwrap();
 
+    let mut timer = rp2040_hal::Timer::new(pac.TIMER, &mut pac.RESETS, &clocks);
+
     let sio = hal::Sio::new(pac.SIO);
 
     let pins = hal::gpio::Pins::new(
@@ -70,7 +73,7 @@ fn main() -> ! {
         &clocks.system_clock,
     );
 
-    let interface_a = I2CDisplayInterface::new(i2c0);
+    let interface_a = I2CDisplayInterface::new_custom_address(i2c0, 0x3Cu8);
     let mut display_a = Ssd1306::new(
         interface_a,
         DisplaySize128x64,
@@ -199,6 +202,15 @@ fn main() -> ! {
     display_b.flush().unwrap();
 
 
+    timer.delay_ms(5000);
+
     loop {
+        for i in 1u8..254 {
+
+            display_b.set_brightness(Brightness::custom(1u8, i)).unwrap();
+            timer.delay_ms(100);
+        }
+        timer.delay_ms(2000);
+
     }
 }
